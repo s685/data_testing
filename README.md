@@ -9,11 +9,14 @@ A Python command-line tool that compares two CSV or Excel files based on specifi
 - **Space-Tolerant**: Handles column names with spaces and extra whitespace
 - **Flexible Comparison**: Compare specific columns or all common columns
 - **Comprehensive HTML Report**: 
-  - Summary statistics
-  - Side-by-side comparison of differences
-  - Records unique to each file
+  - Detailed summary statistics with breakdown
+  - **Shows ONLY differences in common keys** (not all common records)
+  - Clear count of non-common records (records not in both files)
+  - Side-by-side comparison of column differences
+  - Complete records unique to each file
   - Color-coded highlighting for easy visualization
 - **Duplicate Handling**: Automatically uses first occurrence when duplicate keys exist
+- **Smart Reporting**: Focus on what matters - differences and mismatches
 
 ## Installation
 
@@ -91,21 +94,28 @@ The generated HTML report includes:
    - File names
    - Key column used
    - Total records in each file
-   - Count of common keys
-   - Count of unique records in each file
-   - Count of records with differences
+   - **Common Keys Breakdown**:
+     - Total common keys
+     - Matching records (no differences)
+     - Records with differences
+   - **Non-Common Keys Breakdown**:
+     - Total non-common keys
+     - Only in File 1
+     - Only in File 2
 
-2. **Common Records with Differences**
+2. **Column Differences in Common Keys** (⭐ Key Feature)
+   - **Shows ONLY records with differences** (not all common records)
+   - Displays how many records match perfectly
    - Side-by-side comparison showing:
      - Key value
      - Column name
      - Value from File 1 (highlighted in red)
      - Value from File 2 (highlighted in green)
 
-3. **Records Only in File 1**
+3. **Non-Common Keys: Records Only in File 1**
    - Complete rows that exist only in the first file
 
-4. **Records Only in File 2**
+4. **Non-Common Keys: Records Only in File 2**
    - Complete rows that exist only in the second file
 
 ## Features in Detail
@@ -166,12 +176,27 @@ Comparing files...
 Generating HTML report...
 HTML report generated: comparison_report.html
 
-=== Comparison Summary ===
-Common keys: 145
-Only in File 1: 5
-Only in File 2: 10
-Records with differences: 12
+============================================================
+COMPARISON SUMMARY
+============================================================
+
+COMMON KEYS: 145 total
+  - Matching records: 133
+  - Records with differences: 12
+
+NON-COMMON KEYS: 15 total
+  - Only in File 1: 5
+  - Only in File 2: 10
+============================================================
 ```
+
+This clearly shows:
+- **145 common keys** were found in both files
+  - 133 records match perfectly (no differences)
+  - 12 records have column differences (shown in HTML report)
+- **15 non-common keys** total
+  - 5 exist only in File 1
+  - 10 exist only in File 2
 
 ## License
 

@@ -160,6 +160,8 @@ def generate_html_report(comparison_results: Dict[str, Any],
     only_in_file1 = comparison_results['only_in_file1']
     only_in_file2 = comparison_results['only_in_file2']
     differences = comparison_results['differences']
+    common_keys_matching = len(common_keys) - len(differences)
+    total_non_common = len(only_in_file1) + len(only_in_file2)
     
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -280,18 +282,38 @@ def generate_html_report(comparison_results: Dict[str, Any],
             <div class="summary-item"><strong>Key Column:</strong> {escape(key_col1)}</div>
             <div class="summary-item"><strong>Total Records in File 1:</strong> {len(df1)}</div>
             <div class="summary-item"><strong>Total Records in File 2:</strong> {len(df2)}</div>
-            <div class="summary-item"><strong>Common Keys:</strong> {len(common_keys)}</div>
-            <div class="summary-item"><strong>Only in File 1:</strong> {len(only_in_file1)}</div>
-            <div class="summary-item"><strong>Only in File 2:</strong> {len(only_in_file2)}</div>
-            <div class="summary-item"><strong>Records with Differences:</strong> {len(differences)}</div>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="summary-item" style="background-color: #e8f5e9; padding: 8px; margin: 8px -10px; border-radius: 4px;">
+                <strong>✓ Common Keys (Total):</strong> {len(common_keys)}
+            </div>
+            <div class="summary-item" style="margin-left: 20px;">
+                <strong>└─ Matching Records:</strong> {common_keys_matching}
+            </div>
+            <div class="summary-item" style="margin-left: 20px;">
+                <strong>└─ Records with Differences:</strong> {len(differences)}
+            </div>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+            <div class="summary-item" style="background-color: #ffebee; padding: 8px; margin: 8px -10px; border-radius: 4px;">
+                <strong>✗ Non-Common Keys (Total):</strong> {total_non_common}
+            </div>
+            <div class="summary-item" style="margin-left: 20px;">
+                <strong>└─ Only in File 1:</strong> {len(only_in_file1)}
+            </div>
+            <div class="summary-item" style="margin-left: 20px;">
+                <strong>└─ Only in File 2:</strong> {len(only_in_file2)}
+            </div>
         </div>
 """
     
-    # Section: Differences in common records
+    # Section: Differences in common records (ONLY showing differences)
     if differences:
         html_content += f"""
         <div class="section">
-            <h2>Common Records with Differences <span class="count-badge">{len(differences)}</span></h2>
+            <h2>🔍 Column Differences in Common Keys <span class="count-badge">{len(differences)}</span></h2>
+            <p style="color: #666; margin-top: -10px; margin-bottom: 20px;">
+                Showing ONLY the {len(differences)} record(s) with differences out of {len(common_keys)} common keys.
+                ({common_keys_matching} records match perfectly)
+            </p>
             <table>
                 <tr>
                     <th>{escape(key_col1)}</th>
@@ -315,10 +337,10 @@ def generate_html_report(comparison_results: Dict[str, Any],
         </div>
 """
     else:
-        html_content += """
+        html_content += f"""
         <div class="section">
-            <h2>Common Records with Differences</h2>
-            <div class="no-data">No differences found in common records.</div>
+            <h2>🔍 Column Differences in Common Keys</h2>
+            <div class="no-data">✓ Perfect match! All {len(common_keys)} common records have identical values in all compared columns.</div>
         </div>
 """
     
@@ -326,7 +348,10 @@ def generate_html_report(comparison_results: Dict[str, Any],
     if only_in_file1:
         html_content += f"""
         <div class="section">
-            <h2>Records Only in File 1 <span class="count-badge">{len(only_in_file1)}</span></h2>
+            <h2>📄 Non-Common Keys: Only in File 1 <span class="count-badge">{len(only_in_file1)}</span></h2>
+            <p style="color: #666; margin-top: -10px; margin-bottom: 20px;">
+                These {len(only_in_file1)} record(s) exist in File 1 but NOT in File 2.
+            </p>
             <table>
                 <tr>
 """
@@ -350,8 +375,8 @@ def generate_html_report(comparison_results: Dict[str, Any],
     else:
         html_content += """
         <div class="section">
-            <h2>Records Only in File 1</h2>
-            <div class="no-data">No unique records in File 1.</div>
+            <h2>📄 Non-Common Keys: Only in File 1</h2>
+            <div class="no-data">✓ No unique records in File 1. All keys exist in File 2.</div>
         </div>
 """
     
@@ -359,7 +384,10 @@ def generate_html_report(comparison_results: Dict[str, Any],
     if only_in_file2:
         html_content += f"""
         <div class="section">
-            <h2>Records Only in File 2 <span class="count-badge">{len(only_in_file2)}</span></h2>
+            <h2>📄 Non-Common Keys: Only in File 2 <span class="count-badge">{len(only_in_file2)}</span></h2>
+            <p style="color: #666; margin-top: -10px; margin-bottom: 20px;">
+                These {len(only_in_file2)} record(s) exist in File 2 but NOT in File 1.
+            </p>
             <table>
                 <tr>
 """
@@ -383,8 +411,8 @@ def generate_html_report(comparison_results: Dict[str, Any],
     else:
         html_content += """
         <div class="section">
-            <h2>Records Only in File 2</h2>
-            <div class="no-data">No unique records in File 2.</div>
+            <h2>📄 Non-Common Keys: Only in File 2</h2>
+            <div class="no-data">✓ No unique records in File 2. All keys exist in File 1.</div>
         </div>
 """
     
@@ -449,11 +477,19 @@ Examples:
         generate_html_report(results, args.file1, args.file2, args.output)
         
         # Print summary
-        print("\n=== Comparison Summary ===")
-        print(f"Common keys: {len(results['common_keys'])}")
-        print(f"Only in File 1: {len(results['only_in_file1'])}")
-        print(f"Only in File 2: {len(results['only_in_file2'])}")
-        print(f"Records with differences: {len(results['differences'])}")
+        common_keys_matching = len(results['common_keys']) - len(results['differences'])
+        total_non_common = len(results['only_in_file1']) + len(results['only_in_file2'])
+        
+        print("\n" + "="*60)
+        print("COMPARISON SUMMARY")
+        print("="*60)
+        print(f"\nCOMMON KEYS: {len(results['common_keys'])} total")
+        print(f"  - Matching records: {common_keys_matching}")
+        print(f"  - Records with differences: {len(results['differences'])}")
+        print(f"\nNON-COMMON KEYS: {total_non_common} total")
+        print(f"  - Only in File 1: {len(results['only_in_file1'])}")
+        print(f"  - Only in File 2: {len(results['only_in_file2'])}")
+        print("="*60)
         
     except Exception as e:
         print(f"Error: {str(e)}", file=sys.stderr)
