@@ -1,3 +1,10 @@
-pandas>=2.0.0
+# Polars - Lightning fast (Rust-based) DataFrame library
+polars>=0.20.0
+
+# Excel support for Polars (uses Rust calamine engine)
+xlsx2csv>=0.8.0
 openpyxl>=3.0.0
+
+# Alternative: If you want to keep pandas as fallback
+# pandas>=2.0.0
 

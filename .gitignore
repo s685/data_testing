@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Reports
+*.html
+!comparison_report.html
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test files
+test_*.csv
+test_*.xlsx
+
