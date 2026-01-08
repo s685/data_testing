@@ -145,24 +145,31 @@ def compare_dataframes(df1: pl.DataFrame, df2: pl.DataFrame,
             elif val1 is None or val2 is None:
                 diff_cols.append({
                     'column': col1,
-                    'file1_value': str(val1) if val1 is not None else '',
-                    'file2_value': str(val2) if val2 is not None else ''
+                    'file1_value': str(val1).strip() if val1 is not None else '',
+                    'file2_value': str(val2).strip() if val2 is not None else ''
                 })
-            # String comparison (case-insensitive)
+            # String comparison (case-insensitive, strip whitespace)
             elif isinstance(val1, str) and isinstance(val2, str):
-                if val1.lower().strip() != val2.lower().strip():
+                # Strip leading/trailing spaces from both values before comparing
+                val1_clean = val1.strip()
+                val2_clean = val2.strip()
+                if val1_clean.lower() != val2_clean.lower():
                     diff_cols.append({
                         'column': col1,
-                        'file1_value': val1,
-                        'file2_value': val2
+                        'file1_value': val1,  # Show original with spaces
+                        'file2_value': val2   # Show original with spaces
                     })
             # Numeric or other comparison
-            elif val1 != val2:
-                diff_cols.append({
-                    'column': col1,
-                    'file1_value': str(val1),
-                    'file2_value': str(val2)
-                })
+            else:
+                # Convert to string, strip spaces, compare
+                str_val1 = str(val1).strip()
+                str_val2 = str(val2).strip()
+                if str_val1 != str_val2:
+                    diff_cols.append({
+                        'column': col1,
+                        'file1_value': str(val1),
+                        'file2_value': str(val2)
+                    })
         
         if diff_cols:
             differences.append({

@@ -24,7 +24,10 @@ This tool uses **Polars**, a blazing-fast DataFrame library written in Rust, giv
 
 - **Multiple File Format Support**: Works with CSV (.csv) and Excel (.xlsx, .xls) files
 - **Case-Insensitive Matching**: Column names are matched case-insensitively
-- **Space-Tolerant**: Handles column names with spaces and extra whitespace
+- **Space-Tolerant**: 
+  - Handles column names with spaces and extra whitespace
+  - **Automatically strips leading/trailing spaces from values** before comparison
+  - Values like " John " and "John" are treated as identical
 - **Flexible Comparison**: Compare specific columns or all common columns
 - **Comprehensive HTML Report**: 
   - Detailed summary statistics with breakdown
@@ -146,11 +149,18 @@ Column names are automatically normalized for matching:
 - "UserID", "userid", "USER ID" are all treated as the same column
 - Whitespace is trimmed from column names
 
-### String Comparison
+### String Comparison (Smart Matching)
 
 When comparing text values:
-- Comparison is case-insensitive
-- Leading/trailing whitespace is ignored
+- **Case-insensitive**: "John" = "john" = "JOHN"
+- **Whitespace trimming**: " John " = "John" = "John  "
+- Leading and trailing spaces are automatically removed
+- Internal spaces are preserved (e.g., "New York" ≠ "NewYork")
+
+**Examples of matches:**
+- `" Apple "` matches `"Apple"`
+- `"  test  "` matches `"test"`
+- `"Value123"` matches `"value123  "`
 
 ### Duplicate Key Handling
 
