@@ -81,12 +81,12 @@ def compare_dataframes(df1: pl.DataFrame, df2: pl.DataFrame,
     df1_dedup = df1.unique(subset=[key_col1], keep='first')
     df2_dedup = df2.unique(subset=[key_col2], keep='first')
     
-    # Create string key column for comparison (vectorized, super fast)
+    # Create string key column for comparison with WHITESPACE TRIMMING (vectorized, super fast)
     df1_dedup = df1_dedup.with_columns(
-        pl.col(key_col1).cast(pl.Utf8).alias('__key_str__')
+        pl.col(key_col1).cast(pl.Utf8).str.strip_chars().alias('__key_str__')
     )
     df2_dedup = df2_dedup.with_columns(
-        pl.col(key_col2).cast(pl.Utf8).alias('__key_str__')
+        pl.col(key_col2).cast(pl.Utf8).str.strip_chars().alias('__key_str__')
     )
     print(" Done", flush=True)
     

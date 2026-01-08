@@ -26,7 +26,9 @@ This tool uses **Polars**, a blazing-fast DataFrame library written in Rust, giv
 - **Case-Insensitive Matching**: Column names are matched case-insensitively
 - **Space-Tolerant**: 
   - Handles column names with spaces and extra whitespace
-  - **Automatically strips leading/trailing spaces from values** before comparison
+  - **Automatically strips leading/trailing spaces from key values** for matching
+  - **Automatically strips leading/trailing spaces from all values** before comparison
+  - Keys like " ID123 " and "ID123" are matched correctly
   - Values like " John " and "John" are treated as identical
 - **Flexible Comparison**: Compare specific columns or all common columns
 - **Comprehensive HTML Report**: 
@@ -161,6 +163,11 @@ When comparing text values:
 - `" Apple "` matches `"Apple"`
 - `"  test  "` matches `"test"`
 - `"Value123"` matches `"value123  "`
+
+**Key column matching (important!):**
+- Key values are also stripped of whitespace
+- `"  ID123  "` in File 1 matches `"ID123"` in File 2
+- This ensures records are correctly identified as common even with spacing inconsistencies
 
 ### Duplicate Key Handling
 
